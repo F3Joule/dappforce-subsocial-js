@@ -1,7 +1,7 @@
 // Auto-generated via `yarn polkadot-types-from-defs`, do not edit
 /* eslint-disable */
 
-import { BTreeSet, Enum, Option, Struct, Vec } from '@polkadot/types/codec';
+import { BTreeSet, Enum, Option, Struct } from '@polkadot/types/codec';
 import { Text, bool, i32, u16, u32, u64 } from '@polkadot/types/primitive';
 import { AccountId, BlockNumber, Moment } from '@subsocial/types/substrate/interfaces/runtime';
 
@@ -9,6 +9,15 @@ import { AccountId, BlockNumber, Moment } from '@subsocial/types/substrate/inter
 export interface CommentExt extends Struct {
   readonly parent_id: Option<PostId>;
   readonly root_post_id: PostId;
+}
+
+/** @name Content */
+export interface Content extends Enum {
+  readonly isNone: boolean;
+  readonly isIpfs: boolean;
+  readonly asIpfs: IpfsHash;
+  readonly isHyper: boolean;
+  readonly asHyper: Text;
 }
 
 /** @name IpfsHash */
@@ -19,13 +28,15 @@ export interface Post extends Struct {
   readonly id: PostId;
   readonly created: WhoAndWhen;
   readonly updated: Option<WhoAndWhen>;
-  readonly hidden: bool;
-  readonly space_id: Option<SpaceId>;
+  readonly owner: AccountId;
   readonly extension: PostExtension;
-  readonly ipfs_hash: IpfsHash;
-  readonly edit_history: Vec<PostHistoryRecord>;
+  readonly space_id: Option<SpaceId>;
+  readonly content: Content;
+  readonly hidden: bool;
   readonly direct_replies_count: u16;
   readonly total_replies_count: u32;
+  readonly direct_hidden_replies_count: u16;
+  readonly total_hidden_replies_count: u32;
   readonly shares_count: u16;
   readonly upvotes_count: u16;
   readonly downvotes_count: u16;
@@ -53,7 +64,7 @@ export interface PostId extends u64 {}
 /** @name PostUpdate */
 export interface PostUpdate extends Struct {
   readonly space_id: Option<SpaceId>;
-  readonly ipfs_hash: Option<IpfsHash>;
+  readonly content: Option<Content>;
   readonly hidden: Option<bool>;
 }
 
@@ -61,9 +72,8 @@ export interface PostUpdate extends Struct {
 export interface Profile extends Struct {
   readonly created: WhoAndWhen;
   readonly updated: Option<WhoAndWhen>;
-  readonly username: Text;
-  readonly ipfs_hash: IpfsHash;
-  readonly edit_history: Vec<ProfileHistoryRecord>;
+  readonly handle: Text;
+  readonly content: Content;
 }
 
 /** @name ProfileHistoryRecord */
@@ -74,8 +84,8 @@ export interface ProfileHistoryRecord extends Struct {
 
 /** @name ProfileUpdate */
 export interface ProfileUpdate extends Struct {
-  readonly username: Option<Text>;
-  readonly ipfs_hash: Option<IpfsHash>;
+  readonly handle: Option<Text>;
+  readonly content: Option<Content>;
 }
 
 /** @name Reaction */
@@ -103,7 +113,7 @@ export interface Role extends Struct {
   readonly space_id: SpaceId;
   readonly disabled: bool;
   readonly expires_at: Option<BlockNumber>;
-  readonly ipfs_hash: Option<IpfsHash>;
+  readonly content: Content;
   readonly permissions: SpacePermissionSet;
 }
 
@@ -113,7 +123,7 @@ export interface RoleId extends u64 {}
 /** @name RoleUpdate */
 export interface RoleUpdate extends Struct {
   readonly disabled: Option<bool>;
-  readonly ipfs_hash: Option<Option<IpfsHash>>;
+  readonly content: Option<Content>;
   readonly permissions: Option<SpacePermissionSet>;
 }
 
@@ -144,13 +154,14 @@ export interface Space extends Struct {
   readonly id: SpaceId;
   readonly created: WhoAndWhen;
   readonly updated: Option<WhoAndWhen>;
-  readonly hidden: bool;
   readonly owner: AccountId;
+  readonly parent_id: Option<SpaceId>;
   readonly handle: Option<Text>;
-  readonly ipfs_hash: IpfsHash;
+  readonly content: Content;
+  readonly hidden: bool;
   readonly posts_count: u16;
+  readonly hidden_posts_count: u16;
   readonly followers_count: u32;
-  readonly edit_history: Vec<SpaceHistoryRecord>;
   readonly score: i32;
   readonly permissions: Option<SpacePermissions>;
 }
@@ -231,8 +242,9 @@ export interface SpacePermissionSet extends BTreeSet<SpacePermission> {}
 
 /** @name SpaceUpdate */
 export interface SpaceUpdate extends Struct {
+  readonly parent_id: Option<Option<SpaceId>>;
   readonly handle: Option<Option<Text>>;
-  readonly ipfs_hash: Option<IpfsHash>;
+  readonly content: Option<Content>;
   readonly hidden: Option<bool>;
 }
 

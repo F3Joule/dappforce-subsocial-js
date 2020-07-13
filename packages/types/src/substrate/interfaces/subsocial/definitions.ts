@@ -16,25 +16,36 @@ export default {
       }
     },
 
+    Content: {
+      _enum: {
+        None: 'Null',
+        IPFS: 'IpfsHash',
+        Hyper: 'Text'
+      }
+    },
+
+
     SpaceForRoles: {
       owner: 'AccountId',
       permissions: 'Option<SpacePermissions>'
     },
 
+
     Space: {
       id: 'SpaceId',
       created: 'WhoAndWhen',
       updated: 'Option<WhoAndWhen>',
-      hidden: 'bool',
 
       owner: 'AccountId',
+
+      parent_id: 'Option<SpaceId>',
       handle: 'Option<Text>',
-      ipfs_hash: 'IpfsHash',
+      content: 'Content',
+      hidden: 'bool',
 
       posts_count: 'u16',
+      hidden_posts_count: 'u16',
       followers_count: 'u32',
-
-      edit_history: 'Vec<SpaceHistoryRecord>',
 
       score: 'i32',
 
@@ -42,15 +53,18 @@ export default {
     },
 
     SpaceUpdate: {
+      parent_id: 'Option<Option<SpaceId>>',
       handle: 'Option<Option<Text>>',
-      ipfs_hash: 'Option<IpfsHash>',
+      content: 'Option<Content>',
       hidden: 'Option<bool>'
     },
+
 
     SpaceHistoryRecord: {
       edited: 'WhoAndWhen',
       old_data: 'SpaceUpdate'
     },
+
 
     PostId: 'u64',
 
@@ -58,16 +72,19 @@ export default {
       id: 'PostId',
       created: 'WhoAndWhen',
       updated: 'Option<WhoAndWhen>',
-      hidden: 'bool',
 
-      space_id: 'Option<SpaceId>',
+      owner: 'AccountId',
+
       extension: 'PostExtension',
 
-      ipfs_hash: 'IpfsHash',
-      edit_history: 'Vec<PostHistoryRecord>',
+      space_id: 'Option<SpaceId>',
+      content: 'Content',
+      hidden: 'bool',
 
       direct_replies_count: 'u16',
       total_replies_count: 'u32',
+      direct_hidden_replies_count: 'u16',
+      total_hidden_replies_count: 'u32',
 
       shares_count: 'u16',
       upvotes_count: 'u16',
@@ -78,13 +95,8 @@ export default {
 
     PostUpdate: {
       space_id: 'Option<SpaceId>',
-      ipfs_hash: 'Option<IpfsHash>',
+      content: 'Option<Content>',
       hidden: 'Option<bool>'
-    },
-
-    PostHistoryRecord: {
-      edited: 'WhoAndWhen',
-      old_data: 'PostUpdate'
     },
 
     PostExtension: {
@@ -100,6 +112,13 @@ export default {
       root_post_id: 'PostId'
     },
 
+
+    PostHistoryRecord: {
+      edited: 'WhoAndWhen',
+      old_data: 'PostUpdate'
+    },
+
+
     SocialAccount: {
       followers_count: 'u32',
       following_accounts_count: 'u16',
@@ -112,21 +131,21 @@ export default {
       created: 'WhoAndWhen',
       updated: 'Option<WhoAndWhen>',
 
-      username: 'Text',
-      ipfs_hash: 'IpfsHash',
-
-      edit_history: 'Vec<ProfileHistoryRecord>'
+      handle: 'Text',
+      content: 'Content',
     },
 
     ProfileUpdate: {
-      username: 'Option<Text>',
-      ipfs_hash: 'Option<IpfsHash>'
+      handle: 'Option<Text>',
+      content: 'Option<Content>'
     },
+
 
     ProfileHistoryRecord: {
       edited: 'WhoAndWhen',
       old_data: 'ProfileUpdate'
     },
+
 
     ReactionId: 'u64',
 
@@ -157,6 +176,7 @@ export default {
         'FollowAccount'
       ]
     },
+
 
     SpacePermissionSet: 'BTreeSet<SpacePermission>',
 
@@ -227,6 +247,7 @@ export default {
       space_perms: 'Option<SpacePermissions>'
     },
 
+
     RoleId: 'u64',
 
     Role: {
@@ -236,13 +257,13 @@ export default {
       space_id: 'SpaceId',
       disabled: 'bool',
       expires_at: 'Option<BlockNumber>',
-      ipfs_hash: 'Option<IpfsHash>',
+      content: 'Content',
       permissions: 'SpacePermissionSet'
     },
 
     RoleUpdate: {
       disabled: 'Option<bool>',
-      ipfs_hash: 'Option<Option<IpfsHash>>',
+      content: 'Option<Content>',
       permissions: 'Option<SpacePermissionSet>'
     }
   }
